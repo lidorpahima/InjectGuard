@@ -305,6 +305,8 @@ docker-compose up
 1. Build Docker image:
 ```bash
 cd backend
+(python3 -m uvicorn main:app --reload)
+or
 docker build -t llm-shield-api .
 ```
 

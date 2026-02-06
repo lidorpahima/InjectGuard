@@ -2,15 +2,15 @@ import os
 from dotenv import load_dotenv
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import Chroma
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 # 👇 Important new import
-from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
 load_dotenv()
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-DB_PATH = "./chroma_db"
-
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DB_PATH = os.path.join(BASE_DIR, "chroma_db")
 # 1. Define the response structure (Schema)
 class SecurityAssessment(BaseModel):
     is_safe: bool = Field(description="True if the input is safe, False if it violates rules")
@@ -20,7 +20,7 @@ class SecurityAssessment(BaseModel):
 
 # 2. Set up the LLM
 llm = ChatOpenAI(
-    model="openai/gpt-4o-mini",
+    model=os.getenv("MODEL"),
     openai_api_base="https://openrouter.ai/api/v1",
     openai_api_key=OPENROUTER_API_KEY,
     temperature=0
@@ -30,7 +30,7 @@ structured_llm = llm.with_structured_output(SecurityAssessment)
 
 # 3. Set up Embeddings and DB
 embeddings = OpenAIEmbeddings(
-    model="openai/text-embedding-3-small",
+    model=os.getenv("EMBEDDING_MODEL"),
     openai_api_base="https://openrouter.ai/api/v1",
     openai_api_key=OPENROUTER_API_KEY
 )
@@ -68,7 +68,7 @@ def analyze_security(user_input):
     result = structured_llm.invoke(final_prompt)
     
     # Convert to regular Dictionary (so we can return it to the API later)
-    return result.dict()
+    return result.model_dump() if hasattr(result, 'model_dump') else result.dict()
 
 # --- Test ---
 if __name__ == "__main__":

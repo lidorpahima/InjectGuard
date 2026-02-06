@@ -1,22 +1,18 @@
-# Dockerfile for Backend (FastAPI)
-# For AWS Lambda deployment
+FROM python:3.11-slim
 
-FROM public.ecr.aws/lambda/python:3.11
+WORKDIR /app
 
-# Copy requirements
-COPY requirements.txt ${LAMBDA_TASK_ROOT}/
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# Install dependencies
-RUN pip install --no-cache-dir -r ${LAMBDA_TASK_ROOT}/requirements.txt
+RUN apt-get update && apt-get install -y --no-install-recommends gcc build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy application code
-COPY app/ ${LAMBDA_TASK_ROOT}/app/
-COPY data/ ${LAMBDA_TASK_ROOT}/data/
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Set the Lambda handler
-# For Lambda: Use mangum to wrap FastAPI
-# CMD ["app.main.handler"]
+COPY . .
 
-# For local Docker (non-Lambda):
-# Uncomment the line below and comment out the Lambda CMD
+EXPOSE 8000
+
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

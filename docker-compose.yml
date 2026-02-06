@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # Backend FastAPI Service
+  # --- Backend Service ---
   backend:
     build:
       context: ./backend
@@ -9,17 +9,14 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - PINECONE_API_KEY=${PINECONE_API_KEY}
-      - PINECONE_ENV=${PINECONE_ENV}
-      - REDIS_URL=redis://redis:6379
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY} 
+      - MODEL=${MODEL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
     volumes:
       - ./backend:/app
-    depends_on:
-      - redis
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
-  # Frontend React Service
+  # --- Frontend Service ---
   frontend:
     build:
       context: ./frontend
@@ -28,14 +25,13 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend:/app
-      - /app/node_modules
-    depends_on:
-      - backend
+      - /app/node_modules 
     environment:
       - VITE_API_URL=http://localhost:8000
-    command: npm run dev -- --host
+    depends_on:
+      - backend
+    command: npm run dev -- --host 
 
-  # Redis Cache Service
   redis:
     image: redis:7-alpine
     ports:
