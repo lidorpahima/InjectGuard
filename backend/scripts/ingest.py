@@ -9,8 +9,8 @@ import os
 from pathlib import Path
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
+from langchain_openai import OpenAIEmbeddings
 from dotenv import load_dotenv
 
 # Load environment variables (for API keys)
@@ -64,8 +64,11 @@ def ingest_docs(data_path: str = DATA_PATH, db_path: str = DB_PATH) -> None:
     # Create embeddings and save to vector database
     print("⏳ Creating embeddings and saving to ChromaDB...")
     try:
-        embeddings = OpenAIEmbeddings()
-        
+        embeddings = OpenAIEmbeddings(
+            model="openai/text-embedding-3-small",
+            openai_api_base="https://openrouter.ai/api/v1",
+            openai_api_key=os.getenv("OPENROUTER_API_KEY")
+        )     
         vector_db = Chroma.from_documents(
             documents=chunks,
             embedding=embeddings,
