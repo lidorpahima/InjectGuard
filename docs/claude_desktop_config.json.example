@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "redacted-shield": {
+      "command": "python",
+      "args": ["/ABSOLUTE/PATH/TO/llm-security-gateway/agent_tool.py"],
+      "env": {
+        "REDACTED_API_URL": "http://localhost:8000",
+        "REDACTED_API_KEY": "sk-redacted-YOUR-GATEWAY-KEY-FROM-DASHBOARD"
+      }
+    }
+  }
+}

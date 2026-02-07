@@ -9,3 +9,6 @@ chromadb
 pydantic
 requests
 langchain-core
+litellm
+mcp
+httpx

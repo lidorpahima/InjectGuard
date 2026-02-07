@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
+  binaryTargets = ["native", "linux-arm64-openssl-3.0.x", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -71,4 +72,19 @@ model LinkTag {
 
   @@unique([name, projectId])
   @@index(projectId)
+}
+
+// Gateway key = our key. Customer adds their provider + API key; we generate gateway key that wraps it.
+model ApiKey {
+  id              String   @id @default(cuid()) @map("_id")
+  gatewayKey      String   // our key (sk-redacted-xxx) - used in X-API-Key header
+  provider        String   // openrouter | openai | gemini | anthropic | grok
+  model           String?  // optional: model id user wants to use (e.g. gpt-4o, claude-3-opus)
+  customerApiKey  String   // customer's API key for that provider (store encrypted in prod)
+  name            String?  // optional label
+  clerkId         String   // owner (Clerk user id)
+  createdAt       DateTime @default(now())
+
+  @@unique(gatewayKey)
+  @@index(clerkId)
 }
