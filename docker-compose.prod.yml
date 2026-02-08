@@ -1,0 +1,41 @@
+# Production: no volume mounts, built images only.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# Build: docker compose -f docker-compose.yml -f docker-compose.prod.yml build
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes: []  # override dev bind-mount
+
+  redacted:
+    build:
+      context: ./Redacted
+      dockerfile: Dockerfile
+      args:
+        DATABASE_URL: ${DATABASE_URL:-mongodb://mongodb:27017/app}
+    restart: unless-stopped
+    volumes: []  # override dev bind-mount; run built image
+    env_file:
+      - ./Redacted/.env
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - NEXT_PUBLIC_APP_DOMAIN=${NEXT_PUBLIC_APP_DOMAIN}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+      - CLERK_SECRET_KEY=${CLERK_SECRET_KEY}
+      - INTERNAL_API_SECRET=${INTERNAL_API_SECRET}
+    depends_on:
+      - mongodb
+      - backend
+
+  mongodb:
+    restart: unless-stopped
+    # Keep volume for data persistence
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
