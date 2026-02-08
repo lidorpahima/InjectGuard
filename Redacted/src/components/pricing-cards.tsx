@@ -99,11 +99,11 @@ const PricingCards = () => {
                                     <TooltipProvider>
                                         <Tooltip delayDuration={0}>
                                             <TooltipTrigger asChild>
-                                                <p className={cn("text-sm", feature.tooltip && "border-b !border-dashed border-border cursor-pointer")}>
+                                                <p className={cn("text-sm", "tooltip" in feature && feature.tooltip && "border-b !border-dashed border-border cursor-pointer")}>
                                                     {feature.text}
                                                 </p>
                                             </TooltipTrigger>
-                                            {feature.tooltip && (
+                                            {"tooltip" in feature && feature.tooltip && (
                                                 <TooltipContent>
                                                     <p>{feature.tooltip}</p>
                                                 </TooltipContent>
@@ -174,11 +174,11 @@ const PricingCards = () => {
                                     <TooltipProvider>
                                         <Tooltip delayDuration={0}>
                                             <TooltipTrigger asChild>
-                                                <p className={cn("text-sm", feature.tooltip && "border-b !border-dashed border-border cursor-pointer")}>
+                                                <p className={cn("text-sm", "tooltip" in feature && feature.tooltip && "border-b !border-dashed border-border cursor-pointer")}>
                                                     {feature.text}
                                                 </p>
                                             </TooltipTrigger>
-                                            {feature.tooltip && (
+                                            {"tooltip" in feature && feature.tooltip && (
                                                 <TooltipContent>
                                                     <p>{feature.tooltip}</p>
                                                 </TooltipContent>

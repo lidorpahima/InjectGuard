@@ -73,7 +73,7 @@ export default function SettingsPage() {
                 </CardHeader>
                 <CardContent>
                     <Link href="/dashboard/custom-policy">
-                        <Button variant="secondary" className="w-full sm:w-auto">
+                        <Button variant="outline" className="w-full sm:w-auto">
                             View Custom policy
                         </Button>
                     </Link>
@@ -90,7 +90,7 @@ export default function SettingsPage() {
                 </CardHeader>
                 <CardContent>
                     <Link href="/dashboard/api-keys">
-                        <Button variant="secondary">Go to API Keys</Button>
+                        <Button variant="outline">Go to API Keys</Button>
                     </Link>
                 </CardContent>
             </Card>

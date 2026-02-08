@@ -417,6 +417,40 @@ curl -X POST http://localhost:8000/v1/chat/completions \
 
 ---
 
+## 🚀 Production Deployment
+
+### Pre-deploy Build Check
+
+Before deploying, run the build check script to catch TypeScript/Next.js errors early:
+
+```bash
+./scripts/check-build.sh
+```
+
+This script:
+- Installs dependencies if needed
+- Runs `npm run build` in the Redacted directory
+- Exits with code 1 if build fails, 0 on success
+
+**Recommended:** Add this to your CI/CD pipeline or run it locally before pushing to production.
+
+### Docker Production Build
+
+For production, use the production compose file:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml build
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+This uses:
+- Multi-stage Docker builds (smaller images)
+- Next.js standalone output
+- No volume mounts (runs built artifacts)
+- Production-optimized settings
+
+---
+
 ## 🔑 Backend API
 
 | | Endpoint | Method | Description |
