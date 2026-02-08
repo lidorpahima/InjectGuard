@@ -52,13 +52,6 @@ services:
     # Reduce WiredTiger checkpoint debug logs (optional – remove if you want full logs)
     command: ["mongod", "--setParameter", "logComponentVerbosity={storage: {verbosity: 0}}"]
 
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-
 volumes:
   redis_data:
   mongodb_data:

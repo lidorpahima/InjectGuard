@@ -1,24 +1,29 @@
 "use client";
 
 import { APP_NAME } from "@/utils/constants/site";
+import type { LucideIcon } from "lucide-react";
 import {
     ActivityIcon,
+    FileTextIcon,
+    HelpCircle,
     KeyRoundIcon,
     LayoutDashboardIcon,
+    LockIcon,
     ScrollTextIcon,
     SettingsIcon,
 } from "lucide-react";
 import Image from "next/image";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/utils";
 
-const navItems = [
+const navItems: { label: string; href: string; icon: LucideIcon; locked?: boolean }[] = [
     { label: "Overview", href: "/dashboard", icon: LayoutDashboardIcon },
     { label: "API Keys", href: "/dashboard/api-keys", icon: KeyRoundIcon },
     { label: "Logs", href: "/dashboard/logs", icon: ScrollTextIcon },
-    { label: "Activity", href: "/dashboard/activity", icon: ActivityIcon },
-    { label: "Settings", href: "/dashboard/settings", icon: SettingsIcon },
+    { label: "Custom policy", href: "/dashboard/custom-policy", icon: FileTextIcon, locked: true },
+    { label: "Settings", href: "/dashboard/settings", icon: HelpCircle },
 ];
 
 const Sidebar = () => {
@@ -44,6 +49,7 @@ const Sidebar = () => {
                 {navItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.href;
+                    const locked = "locked" in item && item.locked;
                     return (
                         <Link
                             key={item.href}
@@ -56,7 +62,8 @@ const Sidebar = () => {
                             )}
                         >
                             <Icon className="h-4 w-4 shrink-0" />
-                            {item.label}
+                            <span className="flex-1">{item.label}</span>
+                            {locked && <LockIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}
                         </Link>
                     );
                 })}

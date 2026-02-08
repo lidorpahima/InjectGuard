@@ -1,8 +1,8 @@
+import { DemoGuardrail } from "@/components/demo-guardrail";
 import { AnimationContainer, MaxWidthWrapper, PricingCards } from "@/components";
 import { AndMoreExpandable } from "@/components/ui/and-more-expandable";
 import { BentoCard, BentoGrid, CARDS } from "@/components/ui/bento-grid";
 import { TypewriterText } from "@/components/ui/typewriter-text";
-import { BorderBeam } from "@/components/ui/border-beam";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { LampContainer } from "@/components/ui/lamp";
@@ -37,47 +37,33 @@ const HomePage = async () => {
                             </span>
                         </button>
                         <h1 className="text-foreground text-center py-6 text-5xl font-medium tracking-normal text-balance sm:text-6xl md:text-7xl lg:text-8xl !leading-[1.15] w-full font-heading">
-                            Redacted with<br />{" "}
+                            Secure your LLM traffic<br />{" "}
                             <span className="text-transparent bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text inline-block min-w-[2ch]">
                                 <TypewriterText
-                                    words={["Precision", "Speed", "Simplicity"]}
+                                    words={["Jailbreak-proof", "PII-safe", "Policy-first"]}
                                     cursorClassName="bg-fuchsia-500"
                                 />
                             </span>
                         </h1>
                         <p className="mb-12 text-lg tracking-tight text-muted-foreground md:text-xl text-balance">
-                            Effortlessly streamline your link management with Redacted.
+                            One gateway between your app and OpenAI, Gemini, Claude and more. Every request is scanned for threats before it reaches the model.
                             <br className="hidden md:block" />
-                            <span className="hidden md:block">Shorten, track, and organize all your links in one place.</span>
+                            <span className="hidden md:block">Connect your API key, get a gateway key, and we handle the rest.</span>
                         </p>
                         <div className="flex items-center justify-center whitespace-nowrap gap-4 z-50">
                             <Button asChild>
                                 <Link href={user ? "/dashboard" : "/auth/sign-in"} className="flex items-center">
-                                    Start creating for free
+                                    Get started for free
                                     <ArrowRightIcon className="w-4 h-4 ml-2" />
                                 </Link>
                             </Button>
                         </div>
                     </AnimationContainer>
 
-                    <AnimationContainer delay={0.2} className="relative pt-20 pb-20 md:py-32 px-2 bg-transparent w-full">
-                        <div className="absolute md:top-[10%] left-1/2 gradient w-3/4 -translate-x-1/2 h-1/4 md:h-1/3 inset-0 blur-[5rem] animate-image-glow"></div>
-                        <div className="-m-2 rounded-xl p-2 ring-1 ring-inset ring-foreground/20 lg:-m-4 lg:rounded-2xl bg-opacity-50 backdrop-blur-3xl">
-                            <BorderBeam
-                                size={250}
-                                duration={12}
-                                delay={9}
-                            />
-                            <Image
-                                src="/assets/dashboard-dark.png"
-                                alt="Dashboard"
-                                width={1200}
-                                height={1200}
-                                quality={100}
-                                className="rounded-md lg:rounded-xl bg-foreground/10 ring-1 ring-border"
-                            />
-                            <div className="absolute -bottom-4 inset-x-0 w-full h-1/2 bg-gradient-to-t from-background z-40"></div>
-                            <div className="absolute bottom-0 md:-bottom-8 inset-x-0 w-full h-1/4 bg-gradient-to-t from-background z-50"></div>
+                    <AnimationContainer delay={0.2} className="relative pt-16 pb-12 md:py-24 px-2 bg-transparent w-full max-w-3xl mx-auto">
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-2/3 bg-violet-500/10 blur-[6rem] rounded-full pointer-events-none" />
+                        <div className="relative z-10">
+                            <DemoGuardrail />
                         </div>
                     </AnimationContainer>
                 </div>

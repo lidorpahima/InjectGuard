@@ -1,6 +1,6 @@
 import os
 from fastapi import FastAPI, HTTPException, Header, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
 from app.chains.guardrail import analyze_security
@@ -47,6 +47,13 @@ class ScanRequest(BaseModel):
 class ScanOnlyRequest(BaseModel):
     """Body for /scan – text only; used by MCP agent and other clients."""
     text: str
+
+    @field_validator("text")
+    @classmethod
+    def text_not_empty(cls, v: str) -> str:
+        if not v or not v.strip():
+            raise ValueError("text must be non-empty")
+        return v
 
 # Request body for registering a new key (from Next.js dashboard)
 class RegisterKeyRequest(BaseModel):
@@ -213,6 +220,19 @@ def register_key(req: RegisterKeyRequest):
 @app.post("/scan")
 def scan_text(req: ScanOnlyRequest, user_config: dict = Depends(get_user_config)):
     """Scans text for PII, prompt injection, policy violations. Returns is_safe, violated_rule, reason, risk_score."""
+    result = analyze_security(req.text)
+    return {
+        "is_safe": result["is_safe"],
+        "violated_rule": result.get("violated_rule", ""),
+        "reason": result.get("reason", ""),
+        "risk_score": result.get("risk_score", 0),
+    }
+
+
+# Demo scan: public endpoint for homepage demo (no auth required, guardrail only)
+@app.post("/demo-scan")
+def demo_scan(req: ScanOnlyRequest):
+    """Public guardrail check for the landing page demo. No API key needed."""
     result = analyze_security(req.text)
     return {
         "is_safe": result["is_safe"],

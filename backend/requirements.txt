@@ -12,3 +12,7 @@ langchain-core
 litellm
 mcp
 httpx
+
+# Testing (run: pytest)
+pytest
+pytest-asyncio

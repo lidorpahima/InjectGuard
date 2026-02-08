@@ -1,8 +1,8 @@
 <div align="center">
 
-# 🔐 Redacted
+# <img src="Redacted/public/assets/logo.png" alt="Redacted" width="28" height="28" /> Redacted 
 
-### Enterprise AI Security Gateway
+###  AI Security Gateway
 
 <br/>
 
@@ -25,6 +25,7 @@
 [🚀 Quick Start](#-getting-started) · [📐 Architecture](#-architecture-overview) · [🔑 API Docs](#-backend-api) · [🤖 MCP Integration](#-mcp-integration-claude-desktop)
 
 <br/>
+ <img src="Redacted/public/assets/dashboard-dark.png" alt="Redacted"  />
 
 ```
   Your App ──▶ 🔐 Redacted Gateway ──▶ OpenAI / Gemini / Claude / Grok / 100+ models
@@ -437,6 +438,69 @@ curl -X POST http://localhost:8000/v1/chat/completions \
 | `GET /api/internal/resolve-key?key=<gateway_key>` | Resolve gateway key to provider + real API key + model. Protected by `Internal-Secret` header. |
 
 </details>
+
+---
+
+## 🧪 Testing
+
+Backend API tests live in `backend/tests/`. The guardrail (LLM + Chroma) is **mocked**, so no OpenRouter key or DB is required.
+
+### Stack
+
+| Tool | Purpose |
+|:-----|:--------|
+| **pytest** | Test runner |
+| **pytest-asyncio** | Async support (for FastAPI) |
+| **FastAPI `TestClient`** | HTTP client against the app (from `starlette.testclient`) |
+| **unittest.mock.patch** | Mock `analyze_security` so tests don’t call the real guardrail |
+
+### Tests included (`backend/tests/test_main.py`)
+
+| Test | What it checks |
+|:-----|:----------------|
+| `test_health` | `GET /health` → 200, `status: ok` |
+| `test_register_key_invalid_format` | `POST /register-key` with bad key format → 400 |
+| `test_register_key_success` | Valid register → 200, key stored in `API_KEY_MAPPING` |
+| `test_unregister_key` | `POST /unregister-key` removes key from cache |
+| `test_demo_scan_safe` | `POST /demo-scan` with mocked safe result → 200, `is_safe: true` |
+| `test_demo_scan_blocked` | `POST /demo-scan` with mocked block → 200, `is_safe: false`, violation |
+| `test_demo_scan_missing_text` | `POST /demo-scan` without `text` → 422 |
+| `test_demo_scan_empty_text` | `POST /demo-scan` with whitespace-only `text` → 422 |
+| `test_scan_requires_api_key` | `POST /scan` without `X-API-Key` → 401 |
+| `test_chat_completions_requires_api_key` | `POST /v1/chat/completions` without `X-API-Key` → 401 |
+| `test_scan_with_valid_key` | `POST /scan` with registered key + mock → 200, guardrail result |
+| `test_chat_completions_blocked_by_guardrail` | Guardrail returns block → response has `error` and blocked message |
+| `test_list_models_missing_body` | `POST /list-models` with empty body → 422 |
+| `test_list_models_requires_provider_and_key` | `POST /list-models` without provider/key → 422 |
+
+Fixtures (in `conftest.py`): `TestClient(app)`, and reset of `API_KEY_MAPPING` between tests.
+
+### How to run
+
+**After the stack is up (or in CI):**
+
+```bash
+# Rebuild backend so pytest is installed (if you added tests after first build)
+docker-compose build backend
+
+# Run tests inside the backend container
+docker-compose run --rm backend python -m pytest tests/ -v --tb=short
+```
+
+**Or from repo root:**
+
+```bash
+chmod +x scripts/run-tests.sh
+./scripts/run-tests.sh
+```
+
+**Local (with backend venv):**
+
+```bash
+cd backend
+pip install -r requirements.txt
+python -m pytest tests/ -v --tb=short
+```
 
 ---
 
