@@ -1,14 +1,20 @@
-# Production: no volume mounts, built images only.
-# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-# Build: docker compose -f docker-compose.yml -f docker-compose.prod.yml build
+# Production compose – standalone, no dev bind-mounts.
+# Usage: docker compose -f docker-compose.prod.yml up -d --build
 
 services:
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
     restart: unless-stopped
-    volumes: []  # override dev bind-mount
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - MODEL=${MODEL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+      - FRONTEND_URL=http://redacted:3000
+      - INTERNAL_API_SECRET=${INTERNAL_API_SECRET}
     command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
   redacted:
@@ -17,9 +23,9 @@ services:
       dockerfile: Dockerfile
       args:
         DATABASE_URL: ${DATABASE_URL:-mongodb://mongodb:27017/app}
+    ports:
+      - "3000:3000"
     restart: unless-stopped
-    volumes: []  # override dev bind-mount; run built image
-    command: ["npm", "start"]  # override dev npm command; run next start
     env_file:
       - ./Redacted/.env
     environment:
@@ -32,10 +38,13 @@ services:
     depends_on:
       - mongodb
       - backend
+    command: ["npm", "start"]
 
   mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"
     restart: unless-stopped
-    # Keep volume for data persistence
     volumes:
       - mongodb_data:/data/db
 

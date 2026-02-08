@@ -439,8 +439,7 @@ This script:
 For production, use the production compose file:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml build
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml up -d --build
 ```
 
 This uses:
