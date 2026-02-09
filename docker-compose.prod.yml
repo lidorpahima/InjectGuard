@@ -13,11 +13,12 @@ services:
     depends_on:
       - redacted
       - backend
-    command: ["nginx", "-g", "daemon off;"]
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    # No external ports – nginx proxies /api → backend:8000
     restart: unless-stopped
     environment:
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
@@ -33,6 +34,7 @@ services:
       dockerfile: Dockerfile
       args:
         DATABASE_URL: ${DATABASE_URL:-mongodb://mongodb:27017/app}
+    # No external ports – nginx proxies / → redacted:3000
     restart: unless-stopped
     env_file:
       - ./Redacted/.env
@@ -50,6 +52,7 @@ services:
 
   mongodb:
     image: mongo:7
+    # No external ports – only accessible inside Docker network
     restart: unless-stopped
     volumes:
       - mongodb_data:/data/db
