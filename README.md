@@ -457,6 +457,16 @@ This setup:
 - **Runs multi-stage Docker builds** for both frontend and backend (small, production-only images).
 - **Serves the dashboard + marketing site** at your domain (e.g. `https://redactedme.com`) and proxies all backend traffic through `/api` (e.g. `https://redactedme.com/api`).
 
+### 🌐 Live Deployment (AWS)
+
+In production this project runs on **AWS EC2** using:
+
+- **Docker Compose** to orchestrate `nginx` + Next.js + FastAPI + MongoDB.
+- **nginx** as a reverse proxy and TLS terminator (Let’s Encrypt certificates).
+- **Custom domain** `redactedme.com` fronting both the marketing site and the authenticated dashboard.
+
+This is the same architecture you can reproduce by running the commands above on your own EC2 instance.
+
 ---
 
 ## 🔑 Backend API
